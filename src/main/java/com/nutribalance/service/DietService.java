@@ -13,6 +13,10 @@ import java.util.stream.Collectors;
 
 import com.nutribalance.dto.DietCreateRequest;
 
+/**
+ * Service class managing business logic for dietary tracking.
+ * Interacts with DietRepository to persist and calculate user meal data.
+ */
 @Service
 public class DietService {
 
@@ -56,6 +60,23 @@ public class DietService {
         } else {
             throw new IllegalArgumentException("Diet entry not found or unauthorized.");
         }
+    }
+
+    public DietEntryDTO updateDiet(Long id, Long userId, DietCreateRequest request) {
+        DietEntry entry = dietRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Diet entry not found"));
+        
+        if (!entry.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("Unauthorized to update this completely.");
+        }
+
+        entry.setCalories(request.getCalories());
+        entry.setProtein(request.getProtein());
+        entry.setCarbs(request.getCarbs());
+        entry.setFats(request.getFats());
+
+        DietEntry updatedEntry = dietRepository.save(entry);
+        return convertToDTO(updatedEntry);
     }
 
     private DietEntryDTO convertToDTO(DietEntry entry) {

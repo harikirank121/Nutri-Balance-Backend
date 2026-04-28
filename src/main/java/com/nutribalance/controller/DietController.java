@@ -13,6 +13,10 @@ import jakarta.validation.Valid;
 
 import com.nutribalance.dto.DietCreateRequest;
 
+/**
+ * REST Controller handling all dietary entry operations for the application.
+ * Exposes endpoints for creating, retrieving, updating, and deleting diet logs.
+ */
 @RestController
 @RequestMapping("/api/diet")
 public class DietController {
@@ -51,6 +55,18 @@ public class DietController {
             return ResponseEntity.ok(Map.of("message", "Diet entry deleted successfully"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", "Could not delete diet entry: " + e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{userId}/{id}")
+    public ResponseEntity<?> updateDiet(@PathVariable Long userId,
+                                        @PathVariable Long id,
+                                        @Valid @RequestBody DietCreateRequest request) {
+        try {
+            DietEntryDTO updated = dietService.updateDiet(id, userId, request);
+            return ResponseEntity.ok(updated);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Could not update diet entry: " + e.getMessage()));
         }
     }
 }
